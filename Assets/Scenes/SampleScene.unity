@@ -12155,7 +12155,7 @@ MonoBehaviour:
   gameTime: 0
   targetFrameRate: 30
   version: 1.0.0
-  latency: 1
+  latency: 0
   playerId: 0
   deviceId: 
   pool: {fileID: 1572847318}

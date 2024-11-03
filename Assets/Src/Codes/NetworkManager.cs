@@ -9,6 +9,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using Newtonsoft.Json;
+using static Packets;
 
 public class NetworkManager : MonoBehaviour
 {
@@ -237,7 +238,7 @@ public class NetworkManager : MonoBehaviour
             byte[] packetData = incompleteData.GetRange(5, packetLength - 5).ToArray();
             incompleteData.RemoveRange(0, packetLength);
 
-            // Debug.Log($"Received packet: Length = {packetLength}, Type = {packetType}");
+            Debug.Log($"Received packet: Length = {packetLength}, Type = {packetType}");
 
             switch (packetType)
             {
@@ -308,9 +309,23 @@ public class NetworkManager : MonoBehaviour
         }
     }
 
-    void HandlerPingPacket(byte[] data) {
+    async void HandlerPingPacket(byte[] data) {
+        // 서버의 타임스탬프
+        // 바로 돌려줄 예정
         try {
+            // 헤더 생성
+            byte[] header = CreatePacketHeader(data.Length, Packets.PacketType.Ping);
 
+            // 패킷 생성
+            byte[] packet = new byte[header.Length + data.Length];
+            Array.Copy(header, 0, packet, 0, header.Length);
+            Array.Copy(data, 0, packet, header.Length, data.Length);
+
+            await Task.Delay(GameManager.instance.latency);
+
+            Debug.Log("ping 보내줘");
+            // 패킷 전송
+            stream.Write(packet, 0, packet.Length);
         }
         catch (Exception e) {
             Debug.LogError($"Error HandlePongPakcet: {e.Message}");
